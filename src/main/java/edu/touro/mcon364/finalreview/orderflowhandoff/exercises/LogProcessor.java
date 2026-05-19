@@ -3,13 +3,14 @@ package edu.touro.mcon364.finalreview.orderflowhandoff.exercises;
 import edu.touro.mcon364.finalreview.model.LogLevel;
 import edu.touro.mcon364.finalreview.model.LogMessage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -59,7 +60,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LogProcessor {
 
     private final BlockingQueue<LogMessage> queue = new LinkedBlockingQueue<>();
-    private final List<Thread> workers = new ArrayList<>();
+    private ExecutorService executor;
     private final AtomicInteger totalProcessed = new AtomicInteger(0);
     private final ConcurrentHashMap<LogLevel, AtomicInteger> countsByLevel = new ConcurrentHashMap<>();
     private volatile boolean running = false;
@@ -79,36 +80,27 @@ public class LogProcessor {
     public void start(int workerCount) {
         if (workerCount <= 0) throw new IllegalArgumentException("workerCount must be positive");
         running = true;
+        executor = Executors.newFixedThreadPool(workerCount);
         for (int i = 0; i < workerCount; i++) {
-            Thread t = new Thread(this::workerLoop);
-            workers.add(t);
-            t.start();
+            executor.submit(this::workerLoop);
         }
     }
 
     /**
      * The work done by one background worker.
-     *
-     * You may keep this helper method, rename it, or replace it with another
-     * private helper if your design is clearer that way.
      */
     private void workerLoop() {
-        while (running || !queue.isEmpty()) {
-            try {
-                // poll with timeout so we re-check running flag regularly
-                LogMessage msg = queue.poll(100, java.util.concurrent.TimeUnit.MILLISECONDS);
-                if (msg != null) {
-                    process(msg);
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
+        try {
+            while (true) {
+                process(queue.take());
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
     /**
-     * Process one message and update whatever statistics this class tracks.
+     * Process one message and update statistics.
      */
     private void process(LogMessage message) {
         totalProcessed.incrementAndGet();
@@ -121,8 +113,13 @@ public class LogProcessor {
      */
     public void stop() throws InterruptedException {
         running = false;
-        for (Thread t : workers) {
-            t.join();
+        if (executor == null) return;
+        executor.shutdownNow(); // interrupt workers blocked on take()
+        while (!executor.awaitTermination(1, TimeUnit.SECONDS)) {}
+        // drain any messages that were in the queue but not yet picked up
+        LogMessage msg;
+        while ((msg = queue.poll()) != null) {
+            process(msg);
         }
     }
 
@@ -137,8 +134,7 @@ public class LogProcessor {
      * Return a safe snapshot of the counts by level.
      */
     public Map<LogLevel, Integer> getCountsByLevel() {
-        Map<LogLevel, Integer> snapshot = new HashMap<>();
-        countsByLevel.forEach((level, count) -> snapshot.put(level, count.get()));
-        return Map.copyOf(snapshot);
+        return countsByLevel.entrySet().stream()
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> e.getValue().get()));
     }
 }
