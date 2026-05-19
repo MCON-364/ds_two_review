@@ -3,7 +3,14 @@ package edu.touro.mcon364.finalreview.orderflowhandoff.exercises;
 import edu.touro.mcon364.finalreview.model.LogLevel;
 import edu.touro.mcon364.finalreview.model.LogMessage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * LogProcessor.
@@ -51,29 +58,32 @@ import java.util.Map;
  */
 public class LogProcessor {
 
-    /*
-     * Decide what fields this class needs.
-     *
-     * Think about:
-     * - pending work
-     * - worker threads
-     * - whether the processor is still running
-     * - total processed count
-     * - count by log level
-     */
+    private final BlockingQueue<LogMessage> queue = new LinkedBlockingQueue<>();
+    private final List<Thread> workers = new ArrayList<>();
+    private final AtomicInteger totalProcessed = new AtomicInteger(0);
+    private final ConcurrentHashMap<LogLevel, AtomicInteger> countsByLevel = new ConcurrentHashMap<>();
+    private volatile boolean running = false;
 
     /**
      * Accept one message for processing.
      */
     public void submit(LogMessage message) {
-        // TODO: implement
+        if (running) {
+            queue.offer(message);
+        }
     }
 
     /**
      * Start the requested number of background workers.
      */
     public void start(int workerCount) {
-        // TODO: implement
+        if (workerCount <= 0) throw new IllegalArgumentException("workerCount must be positive");
+        running = true;
+        for (int i = 0; i < workerCount; i++) {
+            Thread t = new Thread(this::workerLoop);
+            workers.add(t);
+            t.start();
+        }
     }
 
     /**
@@ -83,36 +93,52 @@ public class LogProcessor {
      * private helper if your design is clearer that way.
      */
     private void workerLoop() {
-        // TODO: implement
+        while (running || !queue.isEmpty()) {
+            try {
+                // poll with timeout so we re-check running flag regularly
+                LogMessage msg = queue.poll(100, java.util.concurrent.TimeUnit.MILLISECONDS);
+                if (msg != null) {
+                    process(msg);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
     }
 
     /**
      * Process one message and update whatever statistics this class tracks.
      */
     private void process(LogMessage message) {
-        // TODO: implement
+        totalProcessed.incrementAndGet();
+        countsByLevel.computeIfAbsent(message.level(), level -> new AtomicInteger(0))
+                     .incrementAndGet();
     }
 
     /**
      * Stop the processor and wait for worker threads to finish.
      */
     public void stop() throws InterruptedException {
-        // TODO: implement
+        running = false;
+        for (Thread t : workers) {
+            t.join();
+        }
     }
 
     /**
      * Return the number of messages processed so far.
      */
     public int getTotalProcessed() {
-        // TODO: implement
-        return 0;
+        return totalProcessed.get();
     }
 
     /**
      * Return a safe snapshot of the counts by level.
      */
     public Map<LogLevel, Integer> getCountsByLevel() {
-        // TODO: implement
-        return Map.of();
+        Map<LogLevel, Integer> snapshot = new HashMap<>();
+        countsByLevel.forEach((level, count) -> snapshot.put(level, count.get()));
+        return Map.copyOf(snapshot);
     }
 }
