@@ -48,8 +48,8 @@ public class ConcurrentLeaderboard {
      * @param entry the score entry to add
      */
     public void submitScore(ScoreEntry entry) {
-        // TODO: leaderboard.add(entry)
-        // TODO: totalSubmissions.incrementAndGet()
+        leaderboard.add(entry);
+        totalSubmissions.incrementAndGet();
     }
 
     /**
@@ -59,16 +59,16 @@ public class ConcurrentLeaderboard {
      * @return immutable top-n list
      */
     public List<ScoreEntry> getTopN(int n) {
-        // TODO
-        return List.of();
+        return leaderboard.stream()
+                .limit(n)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     /**
      * Returns how many times submitScore has been called since creation.
      */
     public int getTotalSubmissions() {
-        // TODO: return totalSubmissions.get()
-        return 0;
+        return totalSubmissions.get();
     }
 
     /**
@@ -82,8 +82,17 @@ public class ConcurrentLeaderboard {
      */
     public void runSimulation(List<String> players, int scoresEach)
             throws InterruptedException {
-        // TODO: create fixed thread pool of players.size() threads
-        // TODO: for each player submit a Runnable that calls submitScore scoresEach times
-        // TODO: pool.shutdown() then pool.awaitTermination(30, TimeUnit.SECONDS)
+        ExecutorService pool = Executors.newFixedThreadPool(players.size());
+        Random random = new Random();
+        for (String player : players) {
+            pool.submit(() -> {
+                for (int i = 0; i < scoresEach; i++) {
+                    int score = random.nextInt(1000); // random score between 0 and 999
+                    submitScore(new ScoreEntry(player, score, System.currentTimeMillis()));
+                }
+            });
+        }
+        pool.shutdown();
+        pool.awaitTermination(30, TimeUnit.SECONDS);
     }
 }

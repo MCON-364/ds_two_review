@@ -30,10 +30,18 @@ import java.util.stream.*;
 public class StudentGradeBook {
 
     private final Map<String, Double> grades;
+    private final TreeMap<Double, String> gradeToStudent;
 
     public StudentGradeBook(Map<String, Double> grades) {
         // TODO: validate non-null; store a defensive copy
-        this.grades = Map.of();
+        this.grades = Map.copyOf(Objects.requireNonNull(grades, "Employee list cannot be null"));
+        this.gradeToStudent = grades.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getValue, // key: value
+                        Map.Entry::getKey,   // value: grade
+                        (existing, replacement) -> existing, // if two students have the same grade, keep the first one
+                        () -> new TreeMap<Double, String>(Comparator.reverseOrder()) // descending order by grade
+                ));
     }
 
     /**
@@ -42,7 +50,8 @@ public class StudentGradeBook {
      */
     public TreeMap<String, Double> buildSortedGradeBook() {
         // TODO
-        return new TreeMap<>();
+        //we can just create a new TreeMap from the existing map, which will automatically sort the entries by key (student name)
+        return new TreeMap<>(grades);
     }
 
     /**
@@ -51,7 +60,9 @@ public class StudentGradeBook {
      */
     public DoubleSummaryStatistics getStatistics() {
         // TODO
-        return new DoubleSummaryStatistics();
+        return grades.values().stream()
+                .mapToDouble(Double::doubleValue)
+                .summaryStatistics();
     }
 
     /**
@@ -60,15 +71,27 @@ public class StudentGradeBook {
      */
     public TreeMap<String, Long> getLetterGradeDistribution() {
         // TODO
-        return new TreeMap<>();
+        return grades.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        entry -> {
+                            double grade = entry.getValue();
+                            if (grade >= 90) return "A";
+                            else if (grade >= 80) return "B";
+                            else if (grade >= 70) return "C";
+                            else if (grade >= 60) return "D";
+                            else return "F";
+                        },
+                        TreeMap::new,
+                        Collectors.counting()
+                ));
     }
+
 
     /**
      * Returns the names of the n highest-scoring students, highest first.
      */
     public List<String> getTopStudents(int n) {
-        // TODO
-        return List.of();
+        return gradeToStudent.values().stream().limit(n).toList();
     }
 
     /**
@@ -76,7 +99,8 @@ public class StudentGradeBook {
      *
      */
     public List<String> getStudentsInScoreRange(double low, double high) {
-        // TODO
-        return List.of();
+        return this.gradeToStudent.subMap(high, true, low, true).values().stream()
+                .sorted() // sort by student name
+                .toList();
     }
 }

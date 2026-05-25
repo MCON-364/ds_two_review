@@ -55,8 +55,8 @@ public class ConcurrentEventLog {
      * @param message   event description
      */
     public void logEvent(long timestamp, String message) {
-        // TODO: long key = timestamp * 1_000_000L + sequence.getAndIncrement();
-        // TODO: log.put(key, message);
+        long key = timestamp * 1_000_000L + sequence.getAndIncrement();
+        log.put(key, message);
     }
 
     /**
@@ -71,9 +71,16 @@ public class ConcurrentEventLog {
      */
     public void runConcurrentSources(List<String> sources, int eventsEach)
             throws InterruptedException {
-        // TODO: ExecutorService pool = Executors.newFixedThreadPool(sources.size());
-        // TODO: for each source, pool.submit(() -> { for loop calling logEvent });
-        // TODO: pool.shutdown(); pool.awaitTermination(30, TimeUnit.SECONDS);
+        ExecutorService executor = Executors.newFixedThreadPool(sources.size());
+        for (String source : sources) {
+            executor.submit(() -> {
+                for (int i = 0; i < eventsEach; i++) {
+                    logEvent(System.currentTimeMillis(), source + "-" + i);
+                }
+            });
+        }
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.MINUTES);
     }
 
     /**
@@ -81,24 +88,26 @@ public class ConcurrentEventLog {
      *
      */
     public List<String> getEventsAfter(long timestamp) {
-        // TODO
-        return List.of();
+        return log.tailMap(timestamp * 1_000_000L + 1) // keys > timestamp
+                .values().stream()
+                .toList(); // collect into a list
     }
 
     /**
      * Returns all events in the timestamp range [from, to] inclusive, in order.
      */
     public List<String> getEventsBetween(long from, long to) {
-        // TODO
-        return List.of();
+        return new ArrayList<>(log.subMap(from * 1_000_000L, true, to * 1_000_000L + 999_999L, true) // keys in [from, to]
+                .values());
     }
 
     /**
      * Returns the n most recent events as an immutable list, newest first.
      */
     public List<String> getMostRecentN(int n) {
-        // TODO
-        return List.of();
+        return log.descendingMap().values().stream() // newest first
+                .limit(n)
+                .toList(); // collect into a list
     }
 
     /** Returns the total number of logged events. */
