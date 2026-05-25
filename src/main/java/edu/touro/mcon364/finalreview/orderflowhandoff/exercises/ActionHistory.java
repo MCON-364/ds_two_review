@@ -1,11 +1,8 @@
 package edu.touro.mcon364.finalreview.orderflowhandoff.exercises;
 
 import edu.touro.mcon364.finalreview.model.Action;
-<<<<<<< HEAD
 import java.util.ArrayDeque;
 import java.util.Deque;
-=======
->>>>>>> d18000c228287e558f0cc49e4b42bedea65b9da5
 import java.util.Optional;
 
 /**
