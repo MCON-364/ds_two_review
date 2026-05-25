@@ -3,17 +3,19 @@ package edu.touro.mcon364.finalreview.orderflowhandoff.homework;
 import edu.touro.mcon364.finalreview.model.PrintJob;
 
 import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Homework 1 — PrintQueue.
  *
  * A small print room has one shared printer. Many print jobs can be submitted,
  * but the printer can only work on one job at a time.
- *
+ * --> producer consumer problem - has to be thread safe
  * The print room should behave the way people expect a normal printer line to
  * behave: jobs wait until it is their turn, and the next job selected for
  * printing should be based on the order in which jobs arrived.
- *
+ * --> first in first out (FIFO) ordering
  * This class is responsible for remembering the waiting print jobs and exposing
  * the operations that the rest of the program would need:
  * submitting a new job, printing the next job, checking what would print next,
@@ -39,6 +41,7 @@ import java.util.Optional;
 public class PrintQueue {
 
     // TODO: choose the field or fields needed to remember waiting print jobs
+    private final BlockingQueue<PrintJob> queue = new LinkedBlockingQueue<>();
 
     /**
      * Records a new print job as waiting.
@@ -46,7 +49,7 @@ public class PrintQueue {
      * @param job the print job to add
      */
     public void submit(PrintJob job) {
-        // TODO: implement
+          queue.offer(job);
     }
 
     /**
@@ -55,8 +58,12 @@ public class PrintQueue {
      * @return the next print job, or Optional.empty() when no jobs are waiting
      */
     public Optional<PrintJob> printNext() {
-        // TODO: implement
-        return Optional.empty();
+        PrintJob job = queue.poll();
+        if (job == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(job);
+        }
     }
 
     /**
@@ -65,15 +72,18 @@ public class PrintQueue {
      * @return the next print job, or Optional.empty() when no jobs are waiting
      */
     public Optional<PrintJob> peekNext() {
-        // TODO: implement
-        return Optional.empty();
+        PrintJob job = queue.peek();
+        if (job == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(job);
+        }
     }
 
     /**
      * Returns the number of jobs currently waiting to be printed.
      */
     public int queuedJobs() {
-        // TODO: implement
-        return 0;
+        return queue.size();
     }
 }
