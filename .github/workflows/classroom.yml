@@ -149,8 +149,8 @@ jobs:
           timeout: 20
           max-score: 17
 
-      # ── Reporter ─────────────────────────────────────────────────────────────
-      - name: Autograding Reporter
+      # ── Reporter: Root finalreview ─────────────────────────────────────────────
+      - name: Autograding Reporter (finalreview)
         if: always()
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
@@ -160,11 +160,27 @@ jobs:
           PRINT-QUEUE_RESULTS: "${{ steps.print-queue.outputs.result }}"
           SENSOR-PROCESSOR_RESULTS: "${{ steps.sensor-processor.outputs.result }}"
           SUBMISSION-REPORT-BUILDER_RESULTS: "${{ steps.submission-report-builder.outputs.result }}"
+        with:
+          runners: action-history,log-processor,ticket-report-builder,print-queue,sensor-processor,submission-report-builder
+
+      # ── Reporter: TreesAndThreads Exercises ────────────────────────────────────
+      - name: Autograding Reporter (treesandthreads.exercises)
+        if: always()
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
           EMPLOYEE-ROSTER-TEST_RESULTS: "${{ steps.employee-roster-test.outputs.result }}"
           WORD-FREQUENCY-COUNTER-TEST_RESULTS: "${{ steps.word-frequency-counter-test.outputs.result }}"
           CONCURRENT-LEADERBOARD-TEST_RESULTS: "${{ steps.concurrent-leaderboard-test.outputs.result }}"
+        with:
+          runners: employee-roster-test,word-frequency-counter-test,concurrent-leaderboard-test
+
+      # ── Reporter: TreesAndThreads Homework ─────────────────────────────────────
+      - name: Autograding Reporter (treesandthreads.homework)
+        if: always()
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
           CONCURRENT-EVENT-LOG-TEST_RESULTS: "${{ steps.concurrent-event-log-test.outputs.result }}"
           LIBRARY-CATALOG-TEST_RESULTS: "${{ steps.library-catalog-test.outputs.result }}"
           STUDENT-GRADE-BOOK-TEST_RESULTS: "${{ steps.student-grade-book-test.outputs.result }}"
         with:
-          runners: action-history,log-processor,ticket-report-builder,print-queue,sensor-processor,submission-report-builder,employee-roster-test,word-frequency-counter-test,concurrent-leaderboard-test,concurrent-event-log-test,library-catalog-test,student-grade-book-test
+          runners: concurrent-event-log-test,library-catalog-test,student-grade-book-test
