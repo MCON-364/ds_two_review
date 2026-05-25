@@ -79,8 +79,6 @@ public class ConcurrentEventLog {
     /**
      * Returns all events logged strictly after the given timestamp, in order.
      *
-     * Hint: log.tailMap((timestamp + 1) * 1_000_000L).values().stream()
-     *           .collect(Collectors.toUnmodifiableList())
      */
     public List<String> getEventsAfter(long timestamp) {
         // TODO
@@ -89,9 +87,6 @@ public class ConcurrentEventLog {
 
     /**
      * Returns all events in the timestamp range [from, to] inclusive, in order.
-     *
-     * Hint: log.subMap(from * 1_000_000L, true, (to + 1) * 1_000_000L, false)
-     *           .values().stream().collect(Collectors.toUnmodifiableList())
      */
     public List<String> getEventsBetween(long from, long to) {
         // TODO
@@ -100,9 +95,6 @@ public class ConcurrentEventLog {
 
     /**
      * Returns the n most recent events as an immutable list, newest first.
-     *
-     * Hint: log.descendingMap().values().stream().limit(n)
-     *           .collect(Collectors.toUnmodifiableList())
      */
     public List<String> getMostRecentN(int n) {
         // TODO

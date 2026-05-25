@@ -50,9 +50,6 @@ public class EmployeeRoster {
     /**
      * Groups employees by department into a sorted two-level structure.
      *
-     * Hint: Collectors.groupingBy(Employee::department, TreeMap::new,
-     *                             Collectors.toCollection(TreeSet::new))
-     *
      * @return sorted map: department name -> sorted set of employees
      */
     public TreeMap<String, TreeSet<Employee>> buildRoster() {
@@ -64,14 +61,6 @@ public class EmployeeRoster {
     /**
      * Returns the highest-paid employee in each department.
      *
-     * Hint: buildRoster().entrySet().stream()
-     *         .collect(Collectors.toMap(
-     *             Map.Entry::getKey,
-     *             e -> e.getValue().stream()
-     *                   .max(Comparator.comparingInt(Employee::salary))
-     *                   .orElseThrow()
-     *         ))
-     *
      * @return map of department name -> top earner
      */
     public Map<String, Employee> getTopEarnerPerDepartment() {
@@ -82,10 +71,6 @@ public class EmployeeRoster {
     /**
      * Returns every employee across all departments in a single alphabetical list.
      *
-     * Hint: buildRoster().values().stream()
-     *         .flatMap(Collection::stream)
-     *         .sorted()
-     *         .collect(Collectors.toList())
      *
      * @return globally sorted employee list
      */
@@ -97,7 +82,6 @@ public class EmployeeRoster {
     /**
      * Returns a view of the roster containing only departments in [from, to].
      *
-     * Hint: buildRoster().subMap(from, true, to, true)
      *
      * @param from lower bound department name (inclusive)
      * @param to   upper bound department name (inclusive)

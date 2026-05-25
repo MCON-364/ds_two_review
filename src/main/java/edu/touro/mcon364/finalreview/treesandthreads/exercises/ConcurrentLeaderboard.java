@@ -55,10 +55,6 @@ public class ConcurrentLeaderboard {
     /**
      * Returns the top n scores as an immutable list, highest score first.
      *
-     * Hint: leaderboard.stream().limit(n).collect(Collectors.toUnmodifiableList())
-     * ConcurrentSkipListSet iterates in natural order from ScoreEntry.compareTo,
-     * which puts highest score first.
-     *
      * @param n number of top entries to return
      * @return immutable top-n list
      */
@@ -80,19 +76,6 @@ public class ConcurrentLeaderboard {
      *
      * Each player in the list submits scoresEach random scores on a separate thread.
      * Wait for all threads to finish before returning.
-     *
-     * Outline:
-     *   ExecutorService pool = Executors.newFixedThreadPool(players.size());
-     *   for (String player : players) {
-     *       pool.submit(() -> {
-     *           Random rng = new Random();
-     *           for (int i = 0; i < scoresEach; i++)
-     *               submitScore(new ScoreEntry(player, rng.nextInt(10000),
-     *                                          System.currentTimeMillis()));
-     *       });
-     *   }
-     *   pool.shutdown();
-     *   pool.awaitTermination(30, TimeUnit.SECONDS);
      *
      * @param players    list of player names
      * @param scoresEach number of random scores each player submits

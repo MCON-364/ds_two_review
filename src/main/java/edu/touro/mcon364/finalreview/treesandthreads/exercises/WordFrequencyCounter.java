@@ -23,11 +23,12 @@ import java.util.stream.*;
  * - Should getTopN return words with the highest count or the lowest count?
  *
  * Requirements:
- * - The constructor receives the list of words to analyse.
+ * - The constructor receives the list of words to analyze.
  * - buildFrequencyMap() returns a TreeMap<String, Long> where every key is a
  *   unique word and every value is how many times that word appeared.
  * - getTopN(n) returns the n words with the highest frequency, sorted
  *   descending by count. Ties may appear in any order.
+ *   Note that you have to sort the frequency map by value, not by key, to get the top N.
  * - getWordsStartingWith(prefix) returns a sorted list of all words whose
  *   first character equals the given prefix character (e.g., 'a').
  * - getMostFrequentInRange(from, to) returns the word with the highest count
@@ -49,10 +50,6 @@ public class WordFrequencyCounter {
     /**
      * Counts how many times each word appears.
      * The returned map must be sorted alphabetically by word.
-     *
-     * Hint: words.stream()
-     *         .collect(Collectors.groupingBy(w -> w, TreeMap::new, Collectors.counting()))
-     *
      * @return sorted frequency map
      */
     public TreeMap<String, Long> buildFrequencyMap() {
@@ -62,12 +59,6 @@ public class WordFrequencyCounter {
 
     /**
      * Returns the n most frequent words, highest count first.
-     *
-     * Hint: buildFrequencyMap().entrySet().stream()
-     *         .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-     *         .limit(n)
-     *         .map(Map.Entry::getKey)
-     *         .collect(Collectors.toList())
      *
      * @param n number of top words to return
      * @return list of words, most frequent first
@@ -81,11 +72,6 @@ public class WordFrequencyCounter {
      * Returns all words whose first letter equals the given prefix letter,
      * in alphabetical order.
      *
-     * Hint: use buildFrequencyMap().subMap(
-     *           String.valueOf(prefix),
-     *           String.valueOf((char)(prefix + 1)))
-     *       to get only words in the right letter range, then collect the keySet.
-     *
      * @param prefix the starting letter (e.g., 'b')
      * @return sorted list of matching words
      */
@@ -97,10 +83,6 @@ public class WordFrequencyCounter {
     /**
      * Finds the most frequent word in the alphabetical range [from, to] inclusive.
      *
-     * Hint: buildFrequencyMap().subMap(from, true, to, true)
-     *         .entrySet().stream()
-     *         .max(Map.Entry.comparingByValue())
-     *         .map(Map.Entry::getKey)
      *
      * @param from lower bound word (inclusive)
      * @param to   upper bound word (inclusive)

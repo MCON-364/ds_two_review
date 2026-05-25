@@ -43,7 +43,6 @@ public class LibraryCatalog {
      * Returns a TreeMap keyed by book title for O(log n) exact lookups.
      * If two books share a title, keep only one (your choice which).
      *
-     * Hint: Collectors.toMap(Book::title, b -> b, (a, b) -> a, TreeMap::new)
      */
     public TreeMap<String, Book> buildTitleIndex() {
         // TODO
@@ -53,9 +52,6 @@ public class LibraryCatalog {
     /**
      * Returns a TreeMap grouping books by author; each author maps to a
      * TreeSet of their books sorted by title.
-     *
-     * Hint: Collectors.groupingBy(Book::author, TreeMap::new,
-     *                             Collectors.toCollection(TreeSet::new))
      */
     public TreeMap<String, TreeSet<Book>> buildAuthorIndex() {
         // TODO
@@ -65,7 +61,6 @@ public class LibraryCatalog {
     /**
      * Returns all books published strictly before the given year, sorted by title.
      *
-     * Hint: stream books, filter by year, .sorted(), collect.
      */
     public List<Book> getBooksPublishedBefore(int year) {
         // TODO
@@ -75,8 +70,6 @@ public class LibraryCatalog {
     /**
      * Returns a sorted list of author names who have more than n books in this catalog.
      *
-     * Hint: stream buildAuthorIndex().entrySet(), filter by set size > n,
-     *       map to getKey(), sorted(), collect.
      */
     public List<String> getAuthorsWithMoreThan(int n) {
         // TODO
@@ -86,8 +79,6 @@ public class LibraryCatalog {
     /**
      * Returns all books whose title starts with the given prefix, alphabetically.
      *
-     * Hint: buildTitleIndex().subMap(prefix, prefix + Character.MAX_VALUE)
-     *       gives a range view; collect its values() into a list.
      */
     public List<Book> findByTitlePrefix(String prefix) {
         // TODO

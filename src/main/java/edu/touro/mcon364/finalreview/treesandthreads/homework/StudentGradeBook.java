@@ -39,7 +39,6 @@ public class StudentGradeBook {
     /**
      * Returns a TreeMap so iteration visits students alphabetically.
      *
-     * Hint: new TreeMap<>(grades)
      */
     public TreeMap<String, Double> buildSortedGradeBook() {
         // TODO
@@ -49,7 +48,6 @@ public class StudentGradeBook {
     /**
      * Returns summary statistics (count, min, max, average, sum) over all grades.
      *
-     * Hint: grades.values().stream().mapToDouble(Double::doubleValue).summaryStatistics()
      */
     public DoubleSummaryStatistics getStatistics() {
         // TODO
@@ -59,10 +57,6 @@ public class StudentGradeBook {
     /**
      * Returns a TreeMap counting students per letter grade.
      *
-     * Hint: stream grades.values(), map each score to a letter grade string
-     * using a helper lambda:
-     *   score >= 90 ? "A" : score >= 80 ? "B" : score >= 70 ? "C" : score >= 60 ? "D" : "F"
-     * then Collectors.groupingBy(letterGrade, TreeMap::new, Collectors.counting()).
      */
     public TreeMap<String, Long> getLetterGradeDistribution() {
         // TODO
@@ -71,10 +65,6 @@ public class StudentGradeBook {
 
     /**
      * Returns the names of the n highest-scoring students, highest first.
-     *
-     * Hint: stream grades.entrySet(),
-     *       sort by Map.Entry.comparingByValue(Comparator.reverseOrder()),
-     *       limit(n), map to getKey(), collect.
      */
     public List<String> getTopStudents(int n) {
         // TODO
@@ -84,8 +74,6 @@ public class StudentGradeBook {
     /**
      * Returns a sorted list of names whose grade falls in [low, high] inclusive.
      *
-     * Hint: stream grades.entrySet(), filter by value in range,
-     *       map to getKey(), sorted(), collect.
      */
     public List<String> getStudentsInScoreRange(double low, double high) {
         // TODO
