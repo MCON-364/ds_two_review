@@ -167,6 +167,4 @@ jobs:
           LIBRARY-CATALOG-TEST_RESULTS: "${{ steps.library-catalog-test.outputs.result }}"
           STUDENT-GRADE-BOOK-TEST_RESULTS: "${{ steps.student-grade-book-test.outputs.result }}"
         with:
-          runners: action-history,log-processor,ticket-report-builder,print-queue,sensor-processor,submission-report-builder
-
-
+          runners: action-history,log-processor,ticket-report-builder,print-queue,sensor-processor,submission-report-builder,employee-roster-test,word-frequency-counter-test,concurrent-leaderboard-test,concurrent-event-log-test,library-catalog-test,student-grade-book-test
