@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MCON 364 Final Review: Requirement → Decision Glossary</title>
+  <style>
+    :root{
+      --bg:#f7f8fb;
+      --panel:#ffffff;
+      --ink:#172033;
+      --muted:#64748b;
+      --brand:#2563eb;
+      --brand2:#7c3aed;
+      --good:#059669;
+      --warn:#d97706;
+      --bad:#dc2626;
+      --line:#dbe3ef;
+      --soft:#eef4ff;
+      --soft2:#f5f0ff;
+      --soft3:#ecfdf5;
+      --code:#0f172a;
+      --cream:#fffbeb;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.55;
+    }
+    header{
+      background:
+        radial-gradient(circle at top left,rgba(255,255,255,.22),transparent 34%),
+        linear-gradient(135deg,var(--brand),var(--brand2));
+      color:white;
+      padding:44px 28px 36px;
+      border-bottom:8px solid rgba(255,255,255,.25);
+    }
+    header h1{margin:0;font-size:clamp(2rem,4vw,3.7rem);line-height:1.05;letter-spacing:-.03em}
+    header p{max-width:1000px;font-size:1.18rem;margin:16px 0 0;opacity:.96}
+    nav{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);
+      padding:10px 22px;
+    }
+    nav .inner{max-width:1180px;margin:0 auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    nav a{
+      color:#1d4ed8;
+      text-decoration:none;
+      border:1px solid #bfdbfe;
+      background:#eff6ff;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:.9rem;
+      font-weight:700;
+    }
+    main{max-width:1180px;margin:0 auto;padding:28px}
+    section{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:24px;
+      margin:24px 0;
+      padding:28px;
+      box-shadow:0 10px 30px rgba(15,23,42,.06);
+    }
+    h2{font-size:clamp(1.65rem,3vw,2.25rem);margin:0 0 12px;line-height:1.15;letter-spacing:-.02em}
+    h3{font-size:1.25rem;margin:26px 0 10px;color:#1e3a8a}
+    h4{font-size:1.05rem;margin:0 0 8px;color:#334155}
+    p{margin:10px 0}
+    .muted{color:var(--muted)}
+    .lead{font-size:1.1rem;color:#334155;max-width:980px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .two{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:start}
+    @media(max-width:850px){.two{grid-template-columns:1fr}}
+    .card{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      background:#fff;
+    }
+    .card.blue{background:var(--soft)}
+    .card.purple{background:var(--soft2)}
+    .card.green{background:var(--soft3)}
+    .card.cream{background:var(--cream)}
+    .badge{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      background:#e0ecff;
+      color:#1d4ed8;
+      font-weight:800;
+      font-size:.78rem;
+      letter-spacing:.02em;
+      margin-right:6px;
+      text-transform:uppercase;
+    }
+    .badge.green{background:#d1fae5;color:#065f46}
+    .badge.purple{background:#ede9fe;color:#5b21b6}
+    .badge.orange{background:#ffedd5;color:#c2410c}
+    .badge.red{background:#fee2e2;color:#991b1b}
+    .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0}
+    .node{padding:12px 15px;border-radius:15px;background:#eef2ff;border:1px solid #c7d2fe;font-weight:800;color:#312e81}
+    .arrow{font-size:1.45rem;color:var(--muted)}
+    ul,ol{padding-left:1.35rem}
+    li{margin:.38rem 0}
+    code{
+      background:#eef2f7;
+      border:1px solid #d8e0ec;
+      border-radius:6px;
+      padding:1px 5px;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size:.92em;
+    }
+    pre{
+      background:var(--code);
+      color:#e5e7eb;
+      border-radius:17px;
+      padding:16px;
+      overflow:auto;
+      line-height:1.45;
+      border:1px solid #1e293b;
+    }
+    pre code{background:transparent;border:0;color:inherit;padding:0}
+    .callout{
+      border-left:6px solid var(--brand);
+      background:#f8fbff;
+      padding:15px 17px;
+      border-radius:13px;
+      margin:16px 0;
+    }
+    .good{border-left-color:var(--good);background:#f0fdf4}
+    .pitfall{border-left-color:var(--bad);background:#fff5f5}
+    .question{border-left-color:var(--brand2);background:#faf5ff}
+    .practice{border-left-color:var(--warn);background:#fffbeb}
+    table{width:100%;border-collapse:collapse;margin:14px 0;border-radius:14px;overflow:hidden}
+    th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+    th{background:#f1f5f9;color:#334155}
+    .compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+    .mini-title{font-weight:900;color:#334155;margin-bottom:4px}
+    .footer{text-align:center;color:var(--muted);font-size:.9rem;margin:30px 0}
+    .entry{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:20px 22px;
+      margin:16px 0;
+      background:#fff;
+    }
+    .entry-phrase{
+      font-size:1.08rem;
+      font-style:italic;
+      color:#334155;
+      background:#f1f5f9;
+      border-left:5px solid var(--brand);
+      padding:10px 14px;
+      border-radius:8px;
+      margin-bottom:12px;
+    }
+    .entry-decision{
+      font-weight:700;
+      color:#1e3a8a;
+      font-size:1.05rem;
+      margin-bottom:6px;
+    }
+    .entry-why{
+      color:#475569;
+      font-size:.97rem;
+    }
+    .entry-code{
+      margin-top:10px;
+    }
+    .checklist li{list-style:"✓  ";padding-left:4px}
+    .slide-break{height:10px}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Requirement → Decision Glossary</h1>
+  <p>A reference for translating common requirement phrases into specific implementation decisions. Use this on the final exam to bridge the gap between "what the problem says" and "what code to write."</p>
+</header>
+
+<nav>
+  <div class="inner">
+    <a href="#how-to-read">How to Read</a>
+    <a href="#structure">Structure Selection</a>
+    <a href="#threading">Threading</a>
+    <a href="#state-safety">State Safety</a>
+    <a href="#statistics">Statistics</a>
+    <a href="#streams">Streams</a>
+    <a href="#shutdown">Shutdown</a>
+    <a href="#patterns">Full Patterns</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- HOW TO READ -->
+<section id="how-to-read">
+  <h2>How to read this glossary</h2>
+  <p class="lead">Each entry shows you the requirement phrase you will see on the test, the decision it implies, the reason, and the code pattern that follows from it.</p>
+
+  <div class="flow">
+    <div class="node">Read the phrase</div>
+    <div class="arrow">→</div>
+    <div class="node">Identify the category</div>
+    <div class="arrow">→</div>
+    <div class="node">Make the decision</div>
+    <div class="arrow">→</div>
+    <div class="node">Write the code</div>
+  </div>
+
+  <div class="callout">
+    <strong>The test will not say "use a BlockingQueue."</strong> It will say something like
+    <em>"jobs arrive continuously and should wait until a worker is ready."</em>
+    Your job is to recognize what that phrase implies.
+  </div>
+</section>
+
+<!-- STRUCTURE SELECTION -->
+<section id="structure">
+  <h2>Structure Selection</h2>
+  <p class="lead">These phrases tell you which data structure to choose.</p>
+
+  <div class="entry">
+    <div class="entry-phrase">"Jobs/items should be handled in the order they arrived" · "first come, first served" · "FIFO"</div>
+    <div class="entry-decision">→ Use a Queue (FIFO ordering)</div>
+    <div class="entry-why">Queue = oldest-in, oldest-out. The front of the queue is always the item that has been waiting the longest. In single-threaded code use <code>ArrayDeque</code>; in multi-threaded code use <code>LinkedBlockingQueue</code>.</div>
+    <div class="entry-code">
+<pre><code>// single-threaded
+Queue&lt;PrintJob&gt; queue = new ArrayDeque&lt;&gt;();
+
+// multi-threaded (also blocking)
+BlockingQueue&lt;PrintJob&gt; queue = new LinkedBlockingQueue&lt;&gt;();</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"Undo the most recent action" · "last in, first out" · "most recent first"</div>
+    <div class="entry-decision">→ Use a Stack (LIFO ordering)</div>
+    <div class="entry-why">Stack = newest-in, first-out. In Java, model a stack with <code>Deque</code> and <code>push</code>/<code>pop</code> on the same end. Never use the legacy <code>java.util.Stack</code> class.</div>
+    <div class="entry-code">
+<pre><code>Deque&lt;Action&gt; undoStack = new ArrayDeque&lt;&gt;();
+undoStack.push(action);          // add to top
+Action last = undoStack.pop();   // remove from top</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"Items arrive while earlier items are still being processed" · "producers submit, workers consume"</div>
+    <div class="entry-decision">→ Use a <code>BlockingQueue</code> as the handoff point</div>
+    <div class="entry-why">A <code>BlockingQueue</code> is the standard producer-consumer handoff. Producers call <code>offer()</code>; workers call <code>poll(timeout)</code> or <code>take()</code>. The queue handles synchronization so you don't have to.</div>
+    <div class="entry-code">
+<pre><code>private final BlockingQueue&lt;LogMessage&gt; queue = new LinkedBlockingQueue&lt;&gt;();
+
+// producer
+queue.offer(message);
+
+// worker
+LogMessage msg = queue.poll(100, TimeUnit.MILLISECONDS);</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"Count how many items exist per category / per level / per assignment"</div>
+    <div class="entry-decision">→ Use a <code>Map</code> from key → count</div>
+    <div class="entry-why">A map lets you look up the count for any key in O(1). If the data is static use streams + <code>groupingBy(counting())</code>. If the data is being updated concurrently use <code>ConcurrentHashMap</code> + <code>merge()</code>.</div>
+    <div class="entry-code">
+<pre><code>// static data — streams
+Map&lt;String, Long&gt; byCategory = tickets.stream()
+    .collect(Collectors.groupingBy(Ticket::category, Collectors.counting()));
+
+// live concurrent data
+ConcurrentHashMap&lt;LogLevel, Integer&gt; counts = new ConcurrentHashMap&lt;&gt;();
+counts.merge(message.level(), 1, Integer::sum); // atomic</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"Track a running count / total that multiple threads will update"</div>
+    <div class="entry-decision">→ Use <code>AtomicInteger</code></div>
+    <div class="entry-why"><code>int++</code> is not atomic — a thread can be interrupted between the read and write, producing wrong counts. <code>AtomicInteger.incrementAndGet()</code> is a single, uninterruptible operation.</div>
+    <div class="entry-code">
+<pre><code>private final AtomicInteger totalProcessed = new AtomicInteger(0);
+
+// in process():
+totalProcessed.incrementAndGet();</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"Track summary statistics (min, max, average, count) that multiple threads will update"</div>
+    <div class="entry-decision">→ Wrap <code>DoubleSummaryStatistics</code> in an <code>AtomicReference</code> and update with <code>updateAndGet</code></div>
+    <div class="entry-why"><code>DoubleSummaryStatistics</code> itself is not thread-safe. Wrapping it in <code>AtomicReference</code> lets you atomically replace the whole object using <code>updateAndGet</code>, which retries if another thread races with it.</div>
+    <div class="entry-code">
+<pre><code>private final AtomicReference&lt;DoubleSummaryStatistics&gt; stats =
+    new AtomicReference&lt;&gt;(new DoubleSummaryStatistics());
+
+stats.updateAndGet(existing -> {
+    DoubleSummaryStatistics updated = new DoubleSummaryStatistics();
+    updated.combine(existing);
+    updated.accept(reading.value());
+    return updated;
+});</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- THREADING -->
+<section id="threading">
+  <h2>Threading Decisions</h2>
+  <p class="lead">These phrases tell you whether to use threads at all, and which tools to use if you do.</p>
+
+  <div class="entry">
+    <div class="entry-phrase">"Multiple threads interact with it" · "must behave correctly when called from different threads"</div>
+    <div class="entry-decision">→ Every shared field must be thread-safe</div>
+    <div class="entry-why">Two threads reading and writing the same plain field is a data race. You must either use concurrent classes (<code>AtomicInteger</code>, <code>ConcurrentHashMap</code>, <code>BlockingQueue</code>) or synchronize access. A <code>volatile</code> field ensures visibility but not atomicity — use it only for flags, not counters.</div>
+    <div class="entry-code">
+<pre><code>// flag: volatile is enough (one writer, many readers)
+private volatile boolean running = false;
+
+// counter: needs atomic (read-modify-write)
+private final AtomicInteger count = new AtomicInteger(0);
+
+// map with concurrent updates: ConcurrentHashMap
+private final ConcurrentHashMap&lt;K, V&gt; map = new ConcurrentHashMap&lt;&gt;();</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"Start N background workers" · "process messages in parallel"</div>
+    <div class="entry-decision">→ Create a fixed-size thread pool with <code>ExecutorService</code></div>
+    <div class="entry-why">An <code>ExecutorService</code> manages the thread lifecycle for you. You submit <code>Runnable</code> tasks; it decides which thread runs each one. Never create raw <code>Thread</code> objects when an executor is available.</div>
+    <div class="entry-code">
+<pre><code>executor = Executors.newFixedThreadPool(workerCount);
+for (int i = 0; i &lt; workerCount; i++) {
+    executor.submit(this::workerLoop);
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"workerCount must be positive" · "N must be greater than zero"</div>
+    <div class="entry-decision">→ Validate and throw <code>IllegalArgumentException</code> immediately</div>
+    <div class="entry-why">Fail fast with a descriptive message. Passing 0 workers to a pool would create a pool that never does work — a silent, hard-to-debug bug.</div>
+    <div class="entry-code">
+<pre><code>if (workerCount &lt;= 0)
+    throw new IllegalArgumentException("workerCount must be positive");</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"Workers should keep processing while work remains" · "drain any remaining work on stop"</div>
+    <div class="entry-decision">→ Worker loop checks <strong>both</strong> the running flag <strong>and</strong> the queue</div>
+    <div class="entry-why">Checking only <code>running</code> would cause workers to exit the moment <code>stop()</code> is called, abandoning items still in the queue. Checking only <code>!queue.isEmpty()</code> would spin forever if producers keep adding items. You need both.</div>
+    <div class="entry-code">
+<pre><code>private void workerLoop() {
+    while (running || !queue.isEmpty()) {
+        try {
+            LogMessage msg = queue.poll(100, TimeUnit.MILLISECONDS);
+            if (msg != null) process(msg);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            break;
+        }
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"The data is not changing while the report is built" · "analyze a collection that already exists"</div>
+    <div class="entry-decision">→ No threads needed — use streams</div>
+    <div class="entry-why">Concurrent structures have overhead. If the data is already complete and nobody is mutating it while you read it, plain sequential stream operations are simpler, faster, and correct.</div>
+    <div class="entry-code">
+<pre><code>// No ExecutorService, no AtomicInteger, no ConcurrentHashMap needed
+public long getLateCount() {
+    return submissions.stream().filter(StudentSubmission::late).count();
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- STATE SAFETY -->
+<section id="state-safety">
+  <h2>State Safety</h2>
+  <p class="lead">These phrases tell you how to protect internal state from leaking or being corrupted by callers.</p>
+
+  <div class="entry">
+    <div class="entry-phrase">"The builder must not expose its internal list" · "callers should not be able to mutate internal state"</div>
+    <div class="entry-decision">→ Copy on the way in; return unmodifiable on the way out</div>
+    <div class="entry-why">If you store the original list reference, the caller can mutate the list after construction and silently corrupt your data. <code>List.copyOf()</code> creates a snapshot. Returning unmodifiable views prevents callers from changing what you return.</div>
+    <div class="entry-code">
+<pre><code>// constructor — defensive copy
+this.submissions = List.copyOf(Objects.requireNonNull(submissions));
+
+// return unmodifiable list
+return submissions.stream()
+    .filter(s -> s.score() &lt; 60)
+    .collect(Collectors.toUnmodifiableList());
+
+// return unmodifiable map
+return Map.copyOf(resultMap);</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"getStats() must not expose mutable internal state" · "return a snapshot"</div>
+    <div class="entry-decision">→ Create a new object and combine/copy the internal state into it</div>
+    <div class="entry-why">If you return the live <code>DoubleSummaryStatistics</code> object, a caller could call <code>accept()</code> on it and corrupt your statistics. Return a fresh object that is a copy of the current state.</div>
+    <div class="entry-code">
+<pre><code>public DoubleSummaryStatistics getStats() {
+    DoubleSummaryStatistics snapshot = new DoubleSummaryStatistics();
+    snapshot.combine(stats.get());
+    return snapshot;
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"A caller should not be able to change the builder's internal state by modifying the original list after construction"</div>
+    <div class="entry-decision">→ <code>List.copyOf()</code> in the constructor</div>
+    <div class="entry-why"><code>List.copyOf()</code> creates a new, unmodifiable list populated with the elements at that moment. Changes to the original list afterwards have no effect on your copy.</div>
+    <div class="entry-code">
+<pre><code>public TicketReportBuilder(List&lt;SupportTicket&gt; tickets) {
+    if (tickets == null) throw new IllegalArgumentException("tickets must not be null");
+    this.tickets = List.copyOf(tickets);
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"The class should not expose its internal collection directly"</div>
+    <div class="entry-decision">→ Make the field <code>private final</code>; only expose it through controlled methods</div>
+    <div class="entry-why">If the field is accessible, callers bypass your API and can add/remove items without going through your validation logic.</div>
+    <div class="entry-code">
+<pre><code>// correct
+private final BlockingQueue&lt;PrintJob&gt; queue = new LinkedBlockingQueue&lt;&gt;();
+
+// wrong — never do this
+public BlockingQueue&lt;PrintJob&gt; queue = new LinkedBlockingQueue&lt;&gt;();</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"submit() should stop accepting work after stop() is called"</div>
+    <div class="entry-decision">→ Guard <code>submit()</code> with the <code>running</code> flag</div>
+    <div class="entry-why">After shutdown, the workers are winding down. Accepting more work would add items the workers will never see.</div>
+    <div class="entry-code">
+<pre><code>public void submit(LogMessage message) {
+    if (running) queue.offer(message);
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- STATISTICS -->
+<section id="statistics">
+  <h2>Statistics &amp; Aggregation</h2>
+  <p class="lead">Choosing the right tool for the reporting question.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Requirement phrase</th>
+        <th>Stream operation</th>
+        <th>Return type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"How many submissions were late?"</td>
+        <td><code>.filter(...).count()</code></td>
+        <td><code>long</code></td>
+      </tr>
+      <tr>
+        <td>"Average score across all submissions"</td>
+        <td><code>.mapToDouble(...).average().orElse(0.0)</code></td>
+        <td><code>double</code></td>
+      </tr>
+      <tr>
+        <td>"How many submissions per assignment name?"</td>
+        <td><code>.collect(groupingBy(..., counting()))</code></td>
+        <td><code>Map&lt;String, Long&gt;</code></td>
+      </tr>
+      <tr>
+        <td>"Submissions whose score is below 60"</td>
+        <td><code>.filter(s -> s.score() &lt; 60).collect(toUnmodifiableList())</code></td>
+        <td><code>List&lt;T&gt;</code></td>
+      </tr>
+      <tr>
+        <td>"Average resolution time for resolved tickets only"</td>
+        <td><code>.filter(resolved).mapToInt(...).average().orElse(0.0)</code></td>
+        <td><code>double</code></td>
+      </tr>
+      <tr>
+        <td>"Min, max, count, sum, and average of processed values"</td>
+        <td><code>DoubleSummaryStatistics</code> + <code>AtomicReference</code></td>
+        <td><code>DoubleSummaryStatistics</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout good">
+    <strong>Edge case rule:</strong> whenever a method returns a number aggregated over a potentially empty collection,
+    you must handle the empty case — use <code>.orElse(0.0)</code> for <code>OptionalDouble</code>, or return <code>0</code> for counts.
+    Never let a missing value crash the method.
+  </div>
+</section>
+
+<!-- STREAMS -->
+<section id="streams">
+  <h2>Streams &amp; Functional Decisions</h2>
+  <p class="lead">When the problem is about analyzing a complete, static collection — not threading — these are your tools.</p>
+
+  <div class="entry">
+    <div class="entry-phrase">"Use streams to express the data processing logic. Do not use loops."</div>
+    <div class="entry-decision">→ Every operation must be a stream pipeline: <code>filter</code>, <code>map</code>, <code>collect</code>, <code>count</code>, etc.</div>
+    <div class="entry-code">
+<pre><code>// filter → collect
+public List&lt;SupportTicket&gt; getHighPriorityUnresolved() {
+    return tickets.stream()
+        .filter(t -> !t.resolved() &amp;&amp; t.priority() == Priority.HIGH)
+        .toList();
+}
+
+// filter → mapToInt → average
+public double getAverageResolutionMinutes() {
+    return tickets.stream()
+        .filter(SupportTicket::resolved)
+        .mapToInt(SupportTicket::minutesToResolve)
+        .average()
+        .orElse(0.0);
+}
+
+// groupingBy → counting
+public Map&lt;String, Long&gt; getCountByCategory() {
+    return tickets.stream()
+        .collect(Collectors.collectingAndThen(
+            Collectors.groupingBy(SupportTicket::category, Collectors.counting()),
+            Map::copyOf));
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"Build a report by combining all the smaller questions"</div>
+    <div class="entry-decision">→ Implement each question as its own method; <code>buildReport()</code> calls them all</div>
+    <div class="entry-why">This is the builder pattern. Each method is independently testable and readable. <code>buildReport()</code> is just a constructor call that passes each result.</div>
+    <div class="entry-code">
+<pre><code>public SubmissionReport buildReport() {
+    return new SubmissionReport(
+        getLateCount(),
+        getAverageScore(),
+        getSubmissionsByAssignment(),
+        getFailingSubmissions()
+    );
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SHUTDOWN -->
+<section id="shutdown">
+  <h2>Shutdown &amp; Lifecycle</h2>
+  <p class="lead">These phrases describe how a processor should stop cleanly.</p>
+
+  <div class="entry">
+    <div class="entry-phrase">"stop() tells the processor to stop accepting new work and waits until already-submitted work has been handled"</div>
+    <div class="entry-decision">→ Three-step shutdown: set flag → interrupt workers → drain queue</div>
+    <div class="entry-why">
+      <ol>
+        <li><strong>Set <code>running = false</code></strong> — prevents new submissions from entering.</li>
+        <li><strong>Call <code>executor.shutdownNow()</code></strong> — sends an interrupt to workers blocked on <code>poll(timeout)</code> or <code>take()</code> so they can check the flag and exit.</li>
+        <li><strong>Call <code>awaitTermination</code></strong> — blocks the calling thread until all workers are done.</li>
+        <li><strong>Drain the queue</strong> — process any items that workers never picked up.</li>
+      </ol>
+    </div>
+    <div class="entry-code">
+<pre><code>public void stop() throws InterruptedException {
+    running = false;
+    if (executor == null) return;
+    executor.shutdownNow();                          // interrupt blocked workers
+    executor.awaitTermination(1, TimeUnit.SECONDS);  // wait for them to exit
+    LogMessage msg;
+    while ((msg = queue.poll()) != null) {           // drain leftover messages
+        process(msg);
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"blocks until all workers have finished, or timeout occurs, or the thread is interrupted"</div>
+    <div class="entry-decision">→ That is exactly what <code>executor.awaitTermination(timeout, unit)</code> does</div>
+    <div class="entry-why">After <code>shutdown()</code> or <code>shutdownNow()</code>, call <code>awaitTermination</code> to block until the pool is empty, the timeout elapses, or the current thread is interrupted. You must call <code>shutdown</code>/<code>shutdownNow</code> first — <code>awaitTermination</code> alone does not stop the pool.</div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-phrase">"why do we need the <code>running</code> flag at all? can't we just check the queue?"</div>
+    <div class="entry-decision">→ Two purposes require a separate flag</div>
+    <div class="entry-why">
+      <strong>1. Gate submissions:</strong> <code>submit()</code> must reject new work after <code>stop()</code>. The queue alone has no concept of "closed."<br/>
+      <strong>2. Signal workers:</strong> a worker loop checks <code>running || !queue.isEmpty()</code>. The flag tells workers "no more work is coming" so they can exit once the queue drains — without the flag they'd spin forever waiting for more items.
+    </div>
+    <div class="entry-code">
+<pre><code>// The flag serves two jobs:
+public void submit(LogMessage message) {
+    if (running) queue.offer(message);  // gate 1: reject new work after stop()
+}
+
+private void workerLoop() {
+    while (running || !queue.isEmpty()) {  // gate 2: exit when stopped AND empty
+        ...
+    }
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- FULL PATTERNS -->
+<section id="patterns">
+  <h2>Full Class Patterns</h2>
+  <p class="lead">These are the complete skeletons derived from the requirement categories above. Match your problem to a pattern, then fill in the specifics.</p>
+
+  <h3>Pattern A — Static Report Builder (no threading)</h3>
+  <p><em>Triggers: "the data is not changing" · "analyze a complete collection" · "use streams"</em></p>
+<pre><code>public class WidgetReportBuilder {
+    private final List&lt;Widget&gt; widgets;  // defensive copy
+
+    public WidgetReportBuilder(List&lt;Widget&gt; widgets) {
+        this.widgets = List.copyOf(Objects.requireNonNull(widgets));
+    }
+
+    public long getXCount()           { return widgets.stream().filter(...).count(); }
+    public double getAvgY()           { return widgets.stream().mapToDouble(...).average().orElse(0.0); }
+    public Map&lt;String, Long&gt; byZ()    { return Map.copyOf(widgets.stream().collect(groupingBy(..., counting()))); }
+    public List&lt;Widget&gt; getFiltered() { return widgets.stream().filter(...).collect(toUnmodifiableList()); }
+
+    public WidgetReport buildReport() {
+        return new WidgetReport(getXCount(), getAvgY(), byZ(), getFiltered());
+    }
+}</code></pre>
+
+  <h3>Pattern B — Concurrent Processor (threading + queue)</h3>
+  <p><em>Triggers: "items arrive while others are still processing" · "background workers" · "multiple threads"</em></p>
+<pre><code>public class WidgetProcessor {
+    private final BlockingQueue&lt;Widget&gt; queue    = new LinkedBlockingQueue&lt;&gt;();
+    private final AtomicInteger totalProcessed   = new AtomicInteger(0);
+    private final ConcurrentHashMap&lt;Type, Integer&gt; counts = new ConcurrentHashMap&lt;&gt;();
+    private volatile boolean running = false;
+    private ExecutorService executor;
+
+    public void submit(Widget w)  { if (running) queue.offer(w); }
+
+    public void start(int n) {
+        if (n &lt;= 0) throw new IllegalArgumentException("workerCount must be positive");
+        running = true;
+        executor = Executors.newFixedThreadPool(n);
+        for (int i = 0; i &lt; n; i++) executor.submit(this::workerLoop);
+    }
+
+    private void workerLoop() {
+        try {
+            while (running || !queue.isEmpty()) {
+                Widget w = queue.poll(100, TimeUnit.MILLISECONDS);
+                if (w != null) process(w);
+            }
+        } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+    }
+
+    private void process(Widget w) {
+        totalProcessed.incrementAndGet();
+        counts.merge(w.type(), 1, Integer::sum);
+    }
+
+    public void stop() throws InterruptedException {
+        running = false;
+        executor.shutdownNow();
+        executor.awaitTermination(1, TimeUnit.SECONDS);
+        Widget w;
+        while ((w = queue.poll()) != null) process(w);
+    }
+
+    public int getTotalProcessed()          { return totalProcessed.get(); }
+    public Map&lt;Type, Integer&gt; getCounts()   { return Map.copyOf(counts); }
+}</code></pre>
+
+  <h3>Pattern C — FIFO Queue Wrapper (single-threaded)</h3>
+  <p><em>Triggers: "first come, first served" · "one shared resource" · "jobs wait their turn"</em></p>
+<pre><code>public class WidgetQueue {
+    private final Queue&lt;Widget&gt; queue = new ArrayDeque&lt;&gt;();  // or LinkedBlockingQueue if multithreaded
+
+    public void submit(Widget w)              { queue.offer(w); }
+    public Optional&lt;Widget&gt; next()            { return Optional.ofNullable(queue.poll()); }
+    public Optional&lt;Widget&gt; peek()            { return Optional.ofNullable(queue.peek()); }
+    public int size()                          { return queue.size(); }
+}</code></pre>
+
+  <h3>Pattern D — Undo/Redo Stack</h3>
+  <p><em>Triggers: "undo the most recent action" · "redo after undo" · "performing a new action clears redo"</em></p>
+<pre><code>public class ActionHistory {
+    private final Deque&lt;Action&gt; undoStack = new ArrayDeque&lt;&gt;();
+    private final Deque&lt;Action&gt; redoStack = new ArrayDeque&lt;&gt;();
+
+    public void perform(Action a) { undoStack.push(a); redoStack.clear(); }
+
+    public Optional&lt;Action&gt; undo() {
+        if (undoStack.isEmpty()) return Optional.empty();
+        Action a = undoStack.pop(); redoStack.push(a); return Optional.of(a);
+    }
+
+    public Optional&lt;Action&gt; redo() {
+        if (redoStack.isEmpty()) return Optional.empty();
+        Action a = redoStack.pop(); undoStack.push(a); return Optional.of(a);
+    }
+}</code></pre>
+
+  <div class="callout practice">
+    <strong>Before writing any code on the test, ask yourself these three questions:</strong>
+    <ol>
+      <li>Is the data already complete, or is it arriving over time?</li>
+      <li>Is more than one thread reading or writing the shared state?</li>
+      <li>Do callers need to get back data — and could they misuse what I return?</li>
+    </ol>
+    Your answers map directly onto Patterns A/B/C/D and the state-safety rules above.
+  </div>
+</section>
+
+</main>
+<div class="footer">MCON 364 · Final Review · Requirement → Decision Glossary</div>
+</body>
+</html>
+

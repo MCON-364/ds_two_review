@@ -6,6 +6,7 @@ import edu.touro.mcon364.finalreview.model.SubmissionReport;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Homework 3 — Building a report from a completed collection.
@@ -30,6 +31,7 @@ import java.util.Objects;
  * Requirements:
  * - The constructor receives the submissions that will be analyzed.
  * - The builder must not expose or mutate its internal list of submissions.
+ *   --> This means that the constructor should make a copy of the list, and that the methods should return unmodifiable collections or copies of the data.
  * - getLateCount() returns how many submissions were marked late.
  * - getAverageScore() returns the average score across all submissions.
  * - getSubmissionsByAssignment() returns how many submissions exist for each assignment name.
@@ -38,10 +40,13 @@ import java.util.Objects;
  *
  * Edge cases to consider:
  * - An empty submission list should not cause a crash.
+ *   --> This means that the methods should handle the case where the list is empty, such as returning 0 for counts and averages, and returning empty collections for maps and lists.
  * - A caller should not be able to change this builder's internal state by
  *   modifying the original list after construction.
+ *   - This means that the constructor should make a defensive copy of the list, such as using List.copyOf() or new ArrayList<>(submissions).
  * - Returned collections should not allow callers to mutate the builder's
  *   internal state.
+ *   --> This means that methods that return collections should return unmodifiable views or copies, such as using Collections.unmodifiableList() or Map.copyOf().
  */
 public class SubmissionReportBuilder {
 
@@ -55,8 +60,10 @@ public class SubmissionReportBuilder {
      * Return the number of submissions that were turned in late.
      */
     public long getLateCount() {
-        // TODO: answer this reporting question from the submissions collection
-        return 0;
+        return submissions.stream()
+                .filter(StudentSubmission::late)
+                .count();
+
     }
 
     /**
@@ -66,7 +73,10 @@ public class SubmissionReportBuilder {
      */
     public double getAverageScore() {
         // TODO: answer this reporting question from the submissions collection
-        return 0.0;
+        return submissions.stream()
+                .mapToDouble(StudentSubmission::score)
+                .average()
+                .orElse(0.0);
     }
 
     /**
@@ -74,16 +84,19 @@ public class SubmissionReportBuilder {
      * submissions received for that assignment.
      */
     public Map<String, Long> getSubmissionsByAssignment() {
-        // TODO: answer this reporting question from the submissions collection
-        return Map.of();
+        Map <String, Long> map = submissions.stream()
+                .collect(Collectors.groupingBy(StudentSubmission::assignmentName, Collectors.counting()));
+        return Map.copyOf(map);
     }
 
     /**
      * Return the submissions whose score is below 60.
      */
     public List<StudentSubmission> getFailingSubmissions() {
-        // TODO: answer this reporting question from the submissions collection
-        return List.of();
+        return submissions.stream()
+                .filter(sub -> sub.score() < 60)
+                .collect(Collectors.toUnmodifiableList());
+
     }
 
     /**
