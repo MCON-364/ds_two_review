@@ -44,7 +44,7 @@ public class EmployeeRoster {
 
     public EmployeeRoster(List<Employee> employees) {
         // TODO: validate non-null, store a defensive copy
-        this.employees = List.of();
+        this.employees = List.copyOf(Objects.requireNonNull(employees, "Employee list cannot be null"));
     }
 
     /**
@@ -55,7 +55,10 @@ public class EmployeeRoster {
     public TreeMap<String, TreeSet<Employee>> buildRoster() {
         // TODO: stream employees, collect using groupingBy with TreeMap supplier
         //       and TreeSet downstream collector
-        return new TreeMap<>();
+        return employees.stream()
+                .collect(Collectors.groupingBy(Employee::department,
+                        TreeMap::new,
+                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Employee::name)))));
     }
 
     /**
@@ -64,9 +67,23 @@ public class EmployeeRoster {
      * @return map of department name -> top earner
      */
     public Map<String, Employee> getTopEarnerPerDepartment() {
-        // TODO
-        return Map.of();
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        TreeMap::new,
+                        //
+                        Collectors.collectingAndThen(
+                                // downstream collector: find the max by salary. Gives Optional<Employee>
+                                Collectors.maxBy(
+                                        Comparator
+                                                .comparingDouble(Employee::salary)
+                                ),
+                                //unwrap the Optional<Employee> to Employee, throwing if empty (should not be empty since every department has at least one employee)
+                                Optional::orElseThrow
+                        )
+                ));
     }
+
 
     /**
      * Returns every employee across all departments in a single alphabetical list.
@@ -76,7 +93,10 @@ public class EmployeeRoster {
      */
     public List<Employee> getAllEmployeesSorted() {
         // TODO: flatMap over the roster values, sort, collect
-        return List.of();
+        return buildRoster().values().stream()
+                .flatMap(Set::stream) // flatten the TreeSet<Employee> into a Stream<Employee>
+                .sorted(Comparator.comparing(Employee::name).thenComparing(Employee::salary)) // sort by employee name
+                .collect(Collectors.toList()); // collect into a List
     }
 
     /**
@@ -89,7 +109,7 @@ public class EmployeeRoster {
      */
     public NavigableMap<String, TreeSet<Employee>> getDepartmentsInRange(String from, String to) {
         // TODO: return buildRoster().subMap(from, true, to, true)
-        return new TreeMap<>();
+        return buildRoster().subMap(from, true, to, true);
     }
 }
 

@@ -43,8 +43,11 @@ public class WordFrequencyCounter {
 
     public WordFrequencyCounter(List<String> words) {
         // TODO: validate that words is not null
+        if (words == null) {
+            throw new IllegalArgumentException("Words list cannot be null");
+        }
         // TODO: store a defensive copy so outside code cannot mutate this object
-        this.words = List.of();
+        this.words = List.copyOf(words);
     }
 
     /**
@@ -54,7 +57,12 @@ public class WordFrequencyCounter {
      */
     public TreeMap<String, Long> buildFrequencyMap() {
         // TODO
-        return new TreeMap<>();
+        return words.stream()
+                .collect(Collectors.groupingBy(
+                        word -> word, // classifier: group by the word itself
+                        TreeMap::new, // supplier: use a TreeMap to keep keys sorted
+                        Collectors.counting() // downstream collector: count occurrences
+                ));
     }
 
     /**
@@ -64,8 +72,12 @@ public class WordFrequencyCounter {
      * @return list of words, most frequent first
      */
     public List<String> getTopN(int n) {
-        // TODO
-        return List.of();
+        Map<String, Long> frequencyMap = this.buildFrequencyMap();
+        return frequencyMap.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder())) // sort by count descending
+                .limit(n) // take the top n entries
+                .map(Map.Entry::getKey) // extract the word from each entry
+                .collect(Collectors.toList()); // collect into a list
     }
 
     /**
@@ -77,8 +89,13 @@ public class WordFrequencyCounter {
      */
     public List<String> getWordsStartingWith(char prefix) {
         // TODO
-        return List.of();
-    }
+            NavigableSet<String> set = new TreeSet<>(words);
+            String from = String.valueOf(prefix);
+            char next = (char) (prefix + 1);
+            String to = String.valueOf(next);
+            return new ArrayList<>(set.subSet(from, to));
+        }
+
 
     /**
      * Finds the most frequent word in the alphabetical range [from, to] inclusive.
@@ -89,7 +106,9 @@ public class WordFrequencyCounter {
      * @return Optional containing the most frequent word in range, or empty if none
      */
     public Optional<String> getMostFrequentInRange(String from, String to) {
-        // TODO
-        return Optional.empty();
+        TreeMap<String, Long> frequencyMap = this.buildFrequencyMap();
+        return frequencyMap.subMap(from, true, to, true).entrySet().stream() // get sub-map in range and stream entries
+                .max(Map.Entry.comparingByValue()) // find entry with max count
+                .map(Map.Entry::getKey); // extract the word from the entry
     }
 }

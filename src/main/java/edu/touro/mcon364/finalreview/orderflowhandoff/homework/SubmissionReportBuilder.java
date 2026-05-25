@@ -53,6 +53,7 @@ public class SubmissionReportBuilder {
     private final List<StudentSubmission> submissions;
 
     public SubmissionReportBuilder(List<StudentSubmission> submissions) {
+        //Notice this idiom for validating non-null and making a defensive copy in one line:
         this.submissions = List.copyOf(Objects.requireNonNull(submissions));
     }
 
